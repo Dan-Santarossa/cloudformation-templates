@@ -1,0 +1,110 @@
+#Still working on this hell
+
+Resources:
+  
+  #Create VPC
+  VPCCF:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.1.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+  
+  #Create Internet Gateway
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    DependsOn: 
+      - VPCCF
+
+  InternetGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPCCF
+      InternetGatewayId: !Ref InternetGateway
+  
+  PublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 42046f09-5be9-4e08-b844-a01ee7e48b6c
+    DependsOn:
+      - VPCCF
+      - RouteTable
+  
+  PublicSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8826f69e-66f8-49ae-a9ef-1ebd59cede8b
+    DependsOn:
+      - VPCCF
+      - RouteTable
+  
+  RouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties: {}
+    DependsOn:
+      - VPCCF
+  
+  SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 22fc88df-1c8c-46f7-8f0b-5040f09e442c
+    DependsOn:
+      - VPCCF
+  
+  EC2one:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      NetworkInterfaces:
+        - SubnetId: !Ref PublicSubnet1
+        - SubnetId: !Ref PublicSubnet1
+        - SubnetId: !Ref PublicSubnet1
+        - SubnetId: !Ref PublicSubnet1
+        - SubnetId: !Ref PublicSubnet1
+    DependsOn:
+      - PublicSubnet1
+  
+  EC2two:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      NetworkInterfaces:
+        - SubnetId: !Ref PublicSubnet2
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1687ce17-5be9-4153-9203-510fc6824d22
+    DependsOn:
+      - PublicSubnet2
+  
+  AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties: 
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MaxSize: '5'
+      MinSize: '2'
+      DesiredCapacity: '2'
+      VPCZoneIdentifier: 
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 4c660748-d71c-437d-b9b4-36867a44baef
+    DependsOn:
+      - EC2I39SEQ
+      - EC2I4RXLB
+  
+  ScalingPolicy:
+    Type: 'AWS::AutoScaling::ScalingPolicy'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: ebd32274-ae20-4412-b778-9701279f212b
+    DependsOn:
+      - ASASG23ELY
+
