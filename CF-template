@@ -8,14 +8,14 @@ Resources:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties: 
       LaunchTemplate:
-        LaunchTemplateId: !Ref LaunchTemplate
+        LaunchTemplateId: !Ref LaunchTemplate        
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
       MaxSize: '5'
       MinSize: '2'
       DesiredCapacity: '2'
       VPCZoneIdentifier: 
-        - !Ref VPC
-        - !Ref VPC 
+        - subnet-0db72017d778ac01b
+        - subnet-016edcc640813e15c
       MetricsCollection:
         - Granularity: 1Minute
   
@@ -27,23 +27,13 @@ Resources:
       AutoScalingGroupName: !Ref AutoScalingGroup
       Cooldown: "60"
       ScalingAdjustment: "1"
-
-  #Use Default VPC
-  VPC:
-    Type: AWS::EC2::VPC
-    DeletionPolicy: Retain
-    Properties:
-      CidrBlock: 172.31.0.0/16
-      EnableDnsSupport: 'true'
-      EnableDnsHostnames: 'true'
-      InstanceTenancy: default   
   
   #Create Security Group
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties: 
       GroupDescription: Open HTTP (port 80) and SSH (port 22)
-      VpcId: !Ref VPC
+      VpcId: vpc-06a26d5ca33d03180
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
